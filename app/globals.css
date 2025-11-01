@@ -22,5 +22,75 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* App polish */
+.app-surface {
+  @apply bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200/70 dark:border-zinc-800/70;
+}
+
+.muted {
+  @apply text-zinc-500 dark:text-zinc-400;
+}
+
+.heading {
+  @apply text-zinc-900 dark:text-zinc-50 font-semibold tracking-[-0.01em];
+}
+
+.subtle-gradient {
+  background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0));
+}
+
+.soft-shadow {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+}
+
+/* Toast animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}
+
+/* Dropdown animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+.fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+.slide-in-from-top-2 {
+  animation: slide-in-from-top 0.2s ease-out forwards;
 }

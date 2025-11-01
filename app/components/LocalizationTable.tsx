@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { LocalizationDB, LocalizationEntry } from '../lib/database';
+import { useToast } from '../context/ToastContext';
 
 export default function LocalizationTable() {
+  const { showToast } = useToast();
   const [entries, setEntries] = useState<LocalizationEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,9 +44,15 @@ export default function LocalizationTable() {
       ));
       setEditingCell(null);
       setEditValue('');
+      showToast('Translation saved successfully', 'success');
+      // Trigger update in preview by incrementing version in localStorage
+      try {
+        localStorage.setItem('localizations_db_version', Date.now().toString());
+      } catch {}
     } catch (error) {
       console.error('Failed to save:', error);
       setError(error instanceof Error ? error.message : 'Failed to save');
+      showToast('Failed to save translation', 'error');
     }
   };
 
@@ -78,9 +86,11 @@ export default function LocalizationTable() {
     try {
       await db.create(newEntry);
       setEntries(prev => [...prev, { ...newEntry, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }].sort((a, b) => a.key.localeCompare(b.key)));
+      showToast('Translation key added successfully', 'success');
     } catch (error) {
       console.error('Failed to create entry:', error);
       setError(error instanceof Error ? error.message : 'Failed to create entry');
+      showToast('Failed to add translation key', 'error');
     }
   };
 
@@ -88,14 +98,39 @@ export default function LocalizationTable() {
     try {
       await db.delete(id);
       setEntries(prev => prev.filter(entry => entry.id !== id));
+      showToast('Translation key deleted successfully', 'success');
     } catch (error) {
       console.error('Failed to delete entry:', error);
       setError(error instanceof Error ? error.message : 'Failed to delete entry');
+      showToast('Failed to delete translation key', 'error');
     }
   };
 
   useEffect(() => {
     loadEntries();
+  }, []);
+
+  // Listen for translation updates (from auto-translation or other sources)
+  useEffect(() => {
+    const handleUpdate = () => {
+      loadEntries();
+    };
+
+    // Listen for custom event
+    window.addEventListener('localizations-updated', handleUpdate);
+    
+    // Also listen for storage events (for cross-tab updates)
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'localizations_db' || e.key === 'localizations_db_version') {
+        loadEntries();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('localizations-updated', handleUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const languages = [
@@ -207,7 +242,16 @@ export default function LocalizationTable() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-                {entries.map((entry) => (
+                {entries.length === 0 ? (
+                  <tr>
+                    <td colSpan={languages.length + 2} className="px-6 py-12 text-center">
+                      <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                      </svg>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">No translations yet. Create a component to get started!</p>
+                    </td>
+                  </tr>
+                ) : entries.map((entry) => (
                   <tr 
                     key={entry.id} 
                     className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"

@@ -14,6 +14,9 @@ export default function LocaleSelector({ currentLocale, onLocaleChange }: Locale
   const handleLocaleChange = (locale: string) => {
     onLocaleChange(locale);
     setIsOpen(false);
+    try {
+      localStorage.setItem('current_locale', locale);
+    } catch {}
     
     // Send locale change message to Sandpack preview
     const message = createLocaleMessage(locale);
@@ -31,7 +34,7 @@ export default function LocaleSelector({ currentLocale, onLocaleChange }: Locale
   const currentLocaleData = SUPPORTED_LOCALES.find(l => l.code === currentLocale);
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
@@ -62,31 +65,22 @@ export default function LocaleSelector({ currentLocale, onLocaleChange }: Locale
           />
           
           {/* Dropdown */}
-          <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20 py-1">
+          <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg z-50 py-1 px-1 flex items-center gap-1 whitespace-nowrap">
             {SUPPORTED_LOCALES.map((locale) => (
               <button
                 key={locale.code}
                 onClick={() => handleLocaleChange(locale.code)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                className={`inline-flex items-center gap-2 px-3 py-2 rounded-full transition-colors ${
                   currentLocale === locale.code 
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-700 dark:text-gray-300'
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' 
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200'
                 }`}
+                title={`${locale.name} (${locale.code.toUpperCase()})`}
               >
                 <span className="text-lg" role="img" aria-label={locale.name}>
                   {locale.flag}
                 </span>
-                <div className="flex-1">
-                  <div className="font-medium">{locale.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {locale.code.toUpperCase()}
-                  </div>
-                </div>
-                {currentLocale === locale.code && (
-                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                )}
+                <span className="text-sm font-medium">{locale.code.toUpperCase()}</span>
               </button>
             ))}
           </div>
