@@ -142,8 +142,8 @@ export default function Editor() {
               // NOW set component state so preview rewrites with complete key set
               setCurrentComponent(componentCode);
               setTimeout(() => {
-                showToast("Component generated successfully", "success");
-              }, 4500);
+                showToast("Component renamed successfully", "success");
+              }, 6000);
             } catch (error) {
               console.error("Failed to save/update component:", error);
             }
@@ -564,6 +564,10 @@ export default function Editor() {
                                               setCurrentComponentId(s.id);
                                               setCurrentComponent(rec.code);
                                               setSavedComponentsOpen(false);
+                                              showToast(
+                                                `Loaded ${s.name}`,
+                                                "info"
+                                              );
                                             }
                                           }}
                                           className="flex-1 text-xs text-left text-gray-700 dark:text-gray-200 hover:text-blue-600 font-medium truncate"

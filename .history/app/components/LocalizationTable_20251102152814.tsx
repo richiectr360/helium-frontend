@@ -114,7 +114,7 @@ export default function LocalizationTable() {
     try {
       await db.delete(id);
       setEntries(prev => prev.filter(entry => entry.id !== id));
-      showToast('Translation key deleted successfully', 'error');
+      showToast('Translation key deleted successfully', 'success');
     } catch (error) {
       console.error('Failed to delete entry:', error);
       setError(error instanceof Error ? error.message : 'Failed to delete entry');

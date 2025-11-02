@@ -563,7 +563,14 @@ export default function Editor() {
                                             if (rec) {
                                               setCurrentComponentId(s.id);
                                               setCurrentComponent(rec.code);
+                                              // Clear messages to avoid conflicts when loading saved component
+                                              setMessages([]);
+                                              processedMessageIds.current.clear();
                                               setSavedComponentsOpen(false);
+                                              showToast(
+                                                `Loaded ${s.name}`,
+                                                "info"
+                                              );
                                             }
                                           }}
                                           className="flex-1 text-xs text-left text-gray-700 dark:text-gray-200 hover:text-blue-600 font-medium truncate"

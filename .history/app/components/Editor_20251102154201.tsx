@@ -126,12 +126,14 @@ export default function Editor() {
                   name: derivedName,
                   code: componentCode,
                   session_id: "default",
+                  chat_history: JSON.stringify(messages),
                 });
               } else {
                 // Also refresh name if it looks generic or changed
                 await updateComponent(id, {
                   code: componentCode,
                   name: derivedName,
+                  chat_history: JSON.stringify(messages),
                 });
               }
               // Refresh saved components list to show new/updated component
@@ -564,6 +566,10 @@ export default function Editor() {
                                               setCurrentComponentId(s.id);
                                               setCurrentComponent(rec.code);
                                               setSavedComponentsOpen(false);
+                                              showToast(
+                                                `Loaded ${s.name}`,
+                                                "info"
+                                              );
                                             }
                                           }}
                                           className="flex-1 text-xs text-left text-gray-700 dark:text-gray-200 hover:text-blue-600 font-medium truncate"

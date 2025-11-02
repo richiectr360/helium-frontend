@@ -557,13 +557,24 @@ export default function Editor() {
                                       <>
                                         <button
                                           onClick={async () => {
+                                            console.log("Loading component:", s.id, s.name);
                                             const rec = await getComponent(
                                               s.id
                                             );
-                                            if (rec) {
+                                            console.log("Loaded component record:", rec);
+                                            if (rec && rec.code) {
                                               setCurrentComponentId(s.id);
                                               setCurrentComponent(rec.code);
+                                              // Clear messages to avoid conflicts when loading saved component
+                                              setMessages([]);
+                                              processedMessageIds.current.clear();
                                               setSavedComponentsOpen(false);
+                                              showToast(
+                                                `Loaded ${s.name}`,
+                                                "info"
+                                              );
+                                            } else {
+                                              console.error("Failed to load component: rec is null or has no code");
                                             }
                                           }}
                                           className="flex-1 text-xs text-left text-gray-700 dark:text-gray-200 hover:text-blue-600 font-medium truncate"
