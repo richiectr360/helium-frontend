@@ -27,7 +27,6 @@ export default function ComponentPreview({ componentCode }: ComponentPreviewProp
   const [version, setVersion] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [previewKey, setPreviewKey] = useState<number>(0);
 
   // Restore saved locale from localStorage after mount to prevent hydration mismatch
   useEffect(() => {
@@ -45,7 +44,7 @@ export default function ComponentPreview({ componentCode }: ComponentPreviewProp
       const setupEmpty = async () => {
         const translations = await getLocaleMap(currentLocale);
         const enTranslations = await getLocaleMap('en');
-        const preamble = `\nconst __TX = ${JSON.stringify(translations)};\nconst __EN = ${JSON.stringify(enTranslations)};\nconst __i18n = (k) => {\n  const v = __TX[k];\n  if (v !== undefined && v !== null && v !== '') return v;\n  const en = __EN[k];\n  if (en !== undefined && en !== null && en !== '') return en;\n  if (/^[A-Za-z]+(\.[A-Za-z0-9_]+)+$/.test(k)) {\n    const last = k.split('.').pop();\n    if (last) return (last.charAt(0).toUpperCase() + last.slice(1)).replace(/_/g, ' ');\n  }\n  return k;\n};\n`;
+        const preamble = `\nconst __TX = ${JSON.stringify(translations)};\nconst __EN = ${JSON.stringify(enTranslations)};\nconst __i18n = (k) => {\n  const v = __TX[k];\n  if (v !== undefined && v !== null && v !== '') return v;\n  const en = __EN[k];\n  if (en !== undefined && en !== null && en !== '') return en;\n  if (k.includes('.')) {\n    const last = k.split('.').pop();\n    if (last) {\n      const lastPart = last.replace(/_/g, ' ');\n      return /^[A-Za-z]/.test(lastPart) ? (lastPart.charAt(0).toUpperCase() + lastPart.slice(1)) : lastPart;\n    }\n  }\n  return k;\n};\n`;
         setProcessedAppCode(SAFE_DEFAULT_APP + preamble);
         setIsLoading(false);
       };
@@ -71,7 +70,7 @@ export default function App() {
       const setupEmpty = async () => {
         const translations = await getLocaleMap(currentLocale);
         const enTranslations = await getLocaleMap('en');
-        const preamble = `\nconst __TX = ${JSON.stringify(translations)};\nconst __EN = ${JSON.stringify(enTranslations)};\nconst __i18n = (k) => {\n  const v = __TX[k];\n  if (v !== undefined && v !== null && v !== '') return v;\n  const en = __EN[k];\n  if (en !== undefined && en !== null && en !== '') return en;\n  if (/^[A-Za-z]+(\.[A-Za-z0-9_]+)+$/.test(k)) {\n    const last = k.split('.').pop();\n    if (last) return (last.charAt(0).toUpperCase() + last.slice(1)).replace(/_/g, ' ');\n  }\n  return k;\n};\n`;
+        const preamble = `\nconst __TX = ${JSON.stringify(translations)};\nconst __EN = ${JSON.stringify(enTranslations)};\nconst __i18n = (k) => {\n  const v = __TX[k];\n  if (v !== undefined && v !== null && v !== '') return v;\n  const en = __EN[k];\n  if (en !== undefined && en !== null && en !== '') return en;\n  if (k.includes('.')) {\n    const last = k.split('.').pop();\n    if (last) {\n      const lastPart = last.replace(/_/g, ' ');\n      return /^[A-Za-z]/.test(lastPart) ? (lastPart.charAt(0).toUpperCase() + lastPart.slice(1)) : lastPart;\n    }\n  }\n  return k;\n};\n`;
         setProcessedAppCode(emptyAppBase + preamble);
         setIsLoading(false);
       };
@@ -186,7 +185,7 @@ export default function App() {
       // Inject a minimal i18n runtime with English fallback
       const translations = await getLocaleMap(currentLocale);
       const enTranslations = await getLocaleMap('en');
-      const preamble = `\nconst __TX = ${JSON.stringify(translations)};\nconst __EN = ${JSON.stringify(enTranslations)};\nconst __i18n = (k) => {\n  const v = __TX[k];\n  if (v !== undefined && v !== null && v !== '') return v;\n  const en = __EN[k];\n  if (en !== undefined && en !== null && en !== '') return en;\n  if (/^[A-Za-z]+(\.[A-Za-z0-9_]+)+$/.test(k)) {\n    const last = k.split('.').pop();\n    if (last) return (last.charAt(0).toUpperCase() + last.slice(1)).replace(/_/g, ' ');\n  }\n  return k;\n};\n`;
+      const preamble = `\nconst __TX = ${JSON.stringify(translations)};\nconst __EN = ${JSON.stringify(enTranslations)};\nconst __i18n = (k) => {\n  const v = __TX[k];\n  if (v !== undefined && v !== null && v !== '') return v;\n  const en = __EN[k];\n  if (en !== undefined && en !== null && en !== '') return en;\n  if (k.includes('.')) {\n    const last = k.split('.').pop();\n    if (last) {\n      const lastPart = last.replace(/_/g, ' ');\n      return /^[A-Za-z]/.test(lastPart) ? (lastPart.charAt(0).toUpperCase() + lastPart.slice(1)) : lastPart;\n    }\n  }\n  return k;\n};\n`;
       setProcessedCode(out + preamble);
       
       // Extract default children from component if it exists
@@ -249,18 +248,6 @@ export default function App() {
     };
     rewriteWithKeys();
   }, [componentCode, currentLocale, version]);
-
-  // Increment preview key when componentCode changes to force Sandpack to remount
-  useEffect(() => {
-    setPreviewKey(k => k + 1);
-  }, [componentCode]);
-
-  // Also increment key when locale changes to update translations
-  useEffect(() => {
-    if (processedCode) {
-      setPreviewKey(k => k + 1);
-    }
-  }, [currentLocale, processedCode]);
 
   // Listen to localStorage changes and custom events to refresh translations when table edits happen
   useEffect(() => {

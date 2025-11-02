@@ -255,13 +255,6 @@ export default function App() {
     setPreviewKey(k => k + 1);
   }, [componentCode]);
 
-  // Also increment key when locale changes to update translations
-  useEffect(() => {
-    if (processedCode) {
-      setPreviewKey(k => k + 1);
-    }
-  }, [currentLocale, processedCode]);
-
   // Listen to localStorage changes and custom events to refresh translations when table edits happen
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {

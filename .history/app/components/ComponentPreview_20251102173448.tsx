@@ -260,7 +260,7 @@ export default function App() {
     if (processedCode) {
       setPreviewKey(k => k + 1);
     }
-  }, [currentLocale, processedCode]);
+  }, [currentLocale]);
 
   // Listen to localStorage changes and custom events to refresh translations when table edits happen
   useEffect(() => {
