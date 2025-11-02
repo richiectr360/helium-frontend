@@ -14,7 +14,6 @@ import {
   updateLocalizationByKey,
   deleteComponent,
 } from "../lib/database";
-import { useToast } from "../context/ToastContext";
 
 interface GlobalThis {
   crypto: Crypto & {
@@ -23,7 +22,6 @@ interface GlobalThis {
 }
 
 export default function Editor() {
-  const { showToast } = useToast();
   const [input, setInput] = useState("");
   const { messages, sendMessage, setMessages } = useChat();
   const [currentComponent, setCurrentComponent] = useState<string>("");
@@ -138,9 +136,7 @@ export default function Editor() {
               // Extract user-visible strings and ensure localization keys exist (with auto-translation)
               await ensureLocalizationsForCode(componentCode);
               // NOW set component state so preview rewrites with complete key set
-              setCurrentComponent(componentCode);
-              // Show success toast after everything is saved
-              showToast("Component generated successfully", "success");
+              await setCurrentComponent(componentCode);
             } catch (error) {
               console.error("Failed to save/update component:", error);
             }

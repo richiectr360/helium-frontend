@@ -137,10 +137,7 @@ export default function Editor() {
               setSaved(items.map((i) => ({ id: i.id, name: i.name })));
               // Extract user-visible strings and ensure localization keys exist (with auto-translation)
               await ensureLocalizationsForCode(componentCode);
-              // NOW set component state so preview rewrites with complete key set
               setCurrentComponent(componentCode);
-              // Show success toast after everything is saved
-              showToast("Component generated successfully", "success");
             } catch (error) {
               console.error("Failed to save/update component:", error);
             }
