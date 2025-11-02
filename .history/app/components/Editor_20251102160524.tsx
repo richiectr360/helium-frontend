@@ -141,6 +141,9 @@ export default function Editor() {
               await ensureLocalizationsForCode(componentCode);
               // NOW set component state so preview rewrites with complete key set
               setCurrentComponent(componentCode);
+              setTimeout(() => {
+                showToast("Component generated successfully", "success");
+              }, 4500);
             } catch (error) {
               console.error("Failed to save/update component:", error);
             }

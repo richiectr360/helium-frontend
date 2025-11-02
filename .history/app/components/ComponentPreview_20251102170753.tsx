@@ -252,7 +252,9 @@ export default function App() {
 
   // Increment preview key when componentCode changes to force Sandpack to remount
   useEffect(() => {
-    setPreviewKey(k => k + 1);
+    if (componentCode) {
+      setPreviewKey(k => k + 1);
+    }
   }, [componentCode]);
 
   // Listen to localStorage changes and custom events to refresh translations when table edits happen

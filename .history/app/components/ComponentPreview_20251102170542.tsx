@@ -27,7 +27,6 @@ export default function ComponentPreview({ componentCode }: ComponentPreviewProp
   const [version, setVersion] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [previewKey, setPreviewKey] = useState<number>(0);
 
   // Restore saved locale from localStorage after mount to prevent hydration mismatch
   useEffect(() => {
@@ -250,11 +249,6 @@ export default function App() {
     rewriteWithKeys();
   }, [componentCode, currentLocale, version]);
 
-  // Increment preview key when componentCode changes to force Sandpack to remount
-  useEffect(() => {
-    setPreviewKey(k => k + 1);
-  }, [componentCode]);
-
   // Listen to localStorage changes and custom events to refresh translations when table edits happen
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
@@ -343,7 +337,7 @@ export default function EmptyState() {
       
       <div className="flex-1 min-h-0 relative m-4 rounded-lg overflow-hidden shadow-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 transition-all duration-300" style={{ height: 'calc(100% - 2rem)', width: 'calc(100% - 2rem)' }}>
         <SandpackProvider
-          key={previewKey}
+          key={componentCode}
           template="react"
           theme="light"
           files={{
