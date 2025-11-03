@@ -149,6 +149,10 @@ export default function App() {
         if (/^\s*:/.test(after)) {
           return m;
         }
+        // Guard: if this appears as an object value (after :), do not replace (propKey handles this)
+        if (/:\s*$/.test(before)) {
+          return m;
+        }
         // Check if key has an alias
         const resolvedKey = keyAliases[k] || k;
         return (allKeys.has(k) || allKeys.has(resolvedKey)) ? `{__i18n('${resolvedKey}')}` : m;
